@@ -1,0 +1,43 @@
+version: "3.3"
+    
+services:
+  newjornadasitedb:
+    image: ${MYSQLV} 
+    volumes:
+      - newjornadasite_db_data:/bitnami/mysql/data
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USR}
+      MYSQL_PASSWORD: ${MYSQL_PW}
+    
+  wordpress:
+    depends_on:
+      - newjornadasitedb
+    image: ${WPV}
+    volumes:
+      - newjornadasite_wordpress_data:/bitnami/wordpress
+    ports:
+      - '8015:8081'
+      # - '4434:8443'
+    restart: always
+    environment:
+      APACHE_HTTP_PORT_NUMBER: ${WPPORT}
+      WORDPRESS_DATABASE_HOST: ${WP_DB_HOST}
+      WORDPRESS_DATABASE_USER: ${WP_DB_USR}
+      WORDPRESS_DATABASE_PASSWORD: ${WP_DB_PW}
+      WORDPRESS_DATABASE_NAME: ${WP_DB_NAME}
+      PHP_UPLOAD_MAX_FILESIZE: 512M
+
+  adminer:
+    image: ${PHPV}
+    ports:
+      - 8104:8080
+    restart: always
+    environment:  
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT}
+
+volumes:
+  newjornadasite_db_data: {}
+  newjornadasite_wordpress_data: {}
